@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Solver : MonoBehaviour
@@ -103,7 +104,6 @@ public class Solver : MonoBehaviour
     int depth = 0;
     IEnumerator Solve()
     {
-        Debug.Log("f");
         canStepNext = false;
         depth++;
         if (depth > 3)
@@ -115,56 +115,58 @@ public class Solver : MonoBehaviour
         }
         int localDepth = depth;
         Debug.Log("Deeper ! " + depth);
-        Box localBox = box_curIn;
-        for(int i=0;i< localBox.movementFuncs.Count;i++)
+        //Box localBox = box_curIn;
+        //Box localBox = Instantiate(box_curIn);
+        Box localBox = box_curIn.CloneViaFakeSerialization();
+
+        for (int i=0;i< localBox.movementFuncs.Count;i++)
         {
             Debug.Log("Depth " + localDepth + "try move " + i);
-            Debug.Log("a");
-            if(localBox.movementFuncs.Count > 0)
-                Debug.Log(localBox.movementFuncs[0]());
-            Debug.Log("aa");
-            
 
+            #region WriteState
+            //boxs_existing[0].t_localBox = localBox;
+            //boxs_existing[0].t_item_load = item_load;
+            //GameObject t = Instantiate(P_Box_Existing.gameObject);
+            //Debug.Log(P_Box_Existing.transform.GetChild(0).GetComponent<Box>().movementFuncs.Count);
+            //Debug.Log(t.transform.GetChild(0).GetComponent<Box>().movementFuncs.Count);
+            //Debug.Log("d");
+            #endregion
+            Box t_box_curIn = box_curIn.CloneViaFakeSerialization();
+            Box t_localBox = localBox.CloneViaFakeSerialization();
+            Item t_item_load = item_load.CloneViaFakeSerialization();
             if (localBox.movementFuncs[i]())
             {
-                Debug.Log("b");
                 while (!canStepNext || localDepth != depth)
                 {
-                    Debug.Log("WAIT 1 - localDepth = " + localDepth);
-                    yield return new WaitForSeconds(1f);
+                    //Debug.Log("WAIT 1 - localDepth = " + localDepth);
+                    yield return new WaitForSeconds(0.1f);
                 }
-                Debug.Log("c");
                 canStepNext = false;
-                #region WriteState
-                boxs_existing[0].t_localBox = localBox;
-                boxs_existing[0].t_item_load = item_load;
-                GameObject t = Instantiate(P_Box_Existing.gameObject);
-                Debug.Log(P_Box_Existing.transform.GetChild(0).GetComponent<Box>().movementFuncs.Count);
-                Debug.Log(t.transform.GetChild(0).GetComponent<Box>().movementFuncs.Count);
-                Debug.Log("d");
-                #endregion
+                
                 StartCoroutine(nameof(Solve));
-                Debug.Log("e");
                 while (!canStepNext || localDepth != depth)
                 {
-                    Debug.Log("WAIT 2 - localDepth = " + localDepth);
-                    yield return new WaitForSeconds(1f);
+                    //Debug.Log("WAIT 2 - localDepth = " + localDepth);
+                    yield return new WaitForSeconds(0.1f);
                 }
-                Debug.Log("g");
                 canStepNext = false;
-                #region ReadState
+
+                box_curIn = t_box_curIn;
+                localBox = t_localBox;
+                item_load = t_item_load;
+                //#region ReadState
                 Debug.Log("Depth " + localDepth + " revert " + i);
-                //Destroy(P_Box_Existing.gameObject);
-                P_Box_Existing = t.transform;
-                localBox = t.transform.GetChild(0).GetComponent<Box>().t_localBox;
-                Debug.Log("localBox.moveCount = " + localBox.movementFuncs.Count);
-                Debug.Log("localBox.moveFunc[0] = " + localBox.movementFuncs[0]);
+                ////Destroy(P_Box_Existing.gameObject);
+                //P_Box_Existing = t.transform;
+                //localBox = t.transform.GetChild(0).GetComponent<Box>().t_localBox;
+                //Debug.Log("localBox.moveCount = " + localBox.movementFuncs.Count);
+                //Debug.Log("localBox.moveFunc[0] = " + localBox.movementFuncs[0]);
 
-                Debug.Log("boxs_existing[0].t_localBox.moveCount = " + boxs_existing[0].t_localBox.movementFuncs.Count);
+                //Debug.Log("boxs_existing[0].t_localBox.moveCount = " + boxs_existing[0].t_localBox.movementFuncs.Count);
 
-                item_load = t.transform.GetChild(0).GetComponent<Box>().t_item_load;
-                //Debug.Log(t.transform.GetChild(0).GetComponent<Box>().t_item_load.name);
-                #endregion
+                //item_load = t.transform.GetChild(0).GetComponent<Box>().t_item_load;
+                ////Debug.Log(t.transform.GetChild(0).GetComponent<Box>().t_item_load.name);
+                //#endregion
             }
         }
         depth--;

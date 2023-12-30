@@ -1,33 +1,33 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+[Serializable]
 public class RecurseTest : MonoBehaviour
 {
-    public bool canStepNext = true;
-    public int depth = 0;
+    public delegate bool TestDelegate();
+    public List<TestDelegate> dele = new();
+    public int[,] ii;
+    private void Awake()
+    {
+        ii = new int[2, 2] { { 10, 20 }, { 30, 40 } };
+
+        dele.Add(delegate() {return Func1(1); });
+        dele.Add(Func2);
+    }
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.A))
-            canStepNext = true;
+
     }
-    private void Start()
+
+    bool Func1(int i)
     {
-        //CallTest();
+        Debug.Log("func1 i = " + i);
+        return true;
     }
-    void CallTest()
+    bool Func2()
     {
-        if (!canStepNext)
-        {
-            Invoke(nameof(CallTest), 0.05f);
-            return;
-        }
-        Test();
-    }
-    public void Test()
-    {
-        canStepNext = false;
-        depth++;
-        CallTest();
+        Debug.Log("func2");
+        return true;
     }
 }

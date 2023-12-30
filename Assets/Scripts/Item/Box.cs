@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using static Box;
 using static UnityEditor.Progress;
-
 public class Box : Item
 {
     //public int id_in_map;
@@ -60,12 +59,11 @@ public class Box : Item
     }
     bool LoadItem(Item item)
     {
-        Debug.Log("m");
         if (Solver.instance.item_load != null)
             return false;
         Solver.instance.item_load = item;
 
-        movementFuncs.Add(delegate () { return UnloadItem(); });
+        movementFuncs.Add(UnloadItem);
         prefab_movement.name = nameof(UnloadItem) + "()";
         Instantiate(prefab_movement, P_Movement);
 
@@ -75,10 +73,9 @@ public class Box : Item
     }
     bool UnloadItem()
     {
-        Debug.Log("n");
         if (Solver.instance.item_load == null)
             return false;
-        movementFuncs.Remove(delegate () { return UnloadItem(); });
+        Debug.Log("RemoveFunc Unload = "  + movementFuncs.Remove(UnloadItem));
         RemoveChild_byName(P_Movement, nameof(UnloadItem) + "()");
         Debug.Log("UnloadItem :" + Solver.instance.item_load.name);
         Solver.instance.item_load = null;
@@ -86,12 +83,12 @@ public class Box : Item
     }
     bool EnterBox(Box box)
     {
-        Debug.Log("h");
+        
         Item load = Solver.instance.item_load;
-        Debug.Log("i");
         if (load == box)
             return false;
         Debug.Log("EnterBox :" + box.name);
+        return true;
         if (load)
         {
             box.AddExistingItem(load);
@@ -99,8 +96,7 @@ public class Box : Item
         }
         box.P_Box = this;
         Solver.instance.box_curIn = box;
-        Debug.Log("j");
-        box.movementFuncs.Add(delegate () { return ExitBox(); });
+        box.movementFuncs.Add(ExitBox);
         prefab_movement.name = nameof(ExitBox) + "()";
         Instantiate(prefab_movement, box.P_Movement);
 
@@ -108,7 +104,6 @@ public class Box : Item
     }
     bool ExitBox()
     {
-        Debug.Log("o");
         Debug.Log("ExitBox :" + name);
         Item load = Solver.instance.item_load;
         if (load)
@@ -117,6 +112,7 @@ public class Box : Item
             RemoveExistingItem(load);
         }
         Solver.instance.box_curIn = P_Box;
+        movementFuncs.Remove(ExitBox);
         //TODO refresh existing item
         P_Box = null;
         return true;
@@ -223,7 +219,7 @@ public class Box : Item
     void RemoveChild_byName(Transform p,string name)
     {
         for (int i = 0; i < p.childCount; i++)
-            if(p.GetChild(i).name == name)
+            if(p.GetChild(i).name.Contains(name))
             {
                 Destroy(p.GetChild(i).gameObject);
                 return;
