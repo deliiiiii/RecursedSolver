@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static Box;
-using static UnityEditor.Progress;
 public class Box : Item
 {
     //public int id_in_map;
     //public bool canExit;
     public int t;
-    public Box t_localBox;
+    public Box t_curBox;
     public Item t_item_load;
     public Box P_Box=null;//Parent
 
@@ -39,6 +35,7 @@ public class Box : Item
     //#endregion
 
     #region movementFuncs
+
     public Transform P_Movement;
     public GameObject prefab_movement;
     [Serializable]
@@ -83,12 +80,10 @@ public class Box : Item
     }
     bool EnterBox(Box box)
     {
-        
         Item load = Solver.instance.item_load;
         if (load == box)
             return false;
         Debug.Log("EnterBox :" + box.name);
-        return true;
         if (load)
         {
             box.AddExistingItem(load);
@@ -221,7 +216,8 @@ public class Box : Item
         for (int i = 0; i < p.childCount; i++)
             if(p.GetChild(i).name.Contains(name))
             {
-                Destroy(p.GetChild(i).gameObject);
+                DestroyImmediate(p.GetChild(i).gameObject);
+                //Debug.Log("Removed :" +  name);
                 return;
             }    
     }
