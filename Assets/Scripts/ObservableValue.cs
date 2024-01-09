@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using UnityEngine;
+using static ItemInfo;
 
 public class ObservableValue<T, TCLASS>
 {
@@ -22,10 +23,25 @@ public class ObservableValue<T, TCLASS>
     }
     public T Value
     {
-        get => value;
+        get
+        {
+            return value;
+        }       
         set
         {
             T oldValue = this.value;
+            //Debug.Log(((Dictionary<string, int>)(object)oldValue).Keys.Count);
+            //if (oldValue is Dictionary<string, int>)
+            //{
+
+            //    if
+            //    ( (  (Dictionary<string, int>)(object)oldValue  ).Keys.Equals(
+            //      (  (Dictionary<string, int>)(object)value     ).Keys       )
+            //    )
+            //    {
+            //        return;
+            //    }
+            //}
             if (this.value.Equals(value))
                 return;
             //if (typeof(T) == typeof(int) && (int.Parse(value.ToString()) < 0))
@@ -38,11 +54,16 @@ public class ObservableValue<T, TCLASS>
             //}
             this.value = value;
             OnValueChangeEvent?.Invoke(oldValue, value, this.valueClass);
+             
         }
     }
     public void OnValueChange(T oldValue, T newValue, TCLASS valueClass)
     {
         //if (valueClass is a)
         //    ((a)((object)valueClass)).Func();
+        if (valueClass is ItemInfo)
+            ((ItemInfo)(object)valueClass).RefreshMovementsFuncName();
+
+
     }
 }
