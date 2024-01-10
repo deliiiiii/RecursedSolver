@@ -219,7 +219,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cbb017cdd6f9eb4b8ae7816750a2e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waitInterval: 0.34
+  waitInterval: 0
+  maxDepth: 40
   item_load:
   - name: 
     isBox: 0
@@ -228,7 +229,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -238,7 +239,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -248,7 +249,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -258,7 +259,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -268,7 +269,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -278,7 +279,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -288,7 +289,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -298,7 +299,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -308,7 +309,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -318,7 +319,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   item_loadCopied:
@@ -329,7 +330,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -339,7 +340,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -349,7 +350,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -359,7 +360,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -369,7 +370,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -379,7 +380,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -389,7 +390,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -399,7 +400,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -409,7 +410,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -419,7 +420,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   box_curIn:
@@ -430,7 +431,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -440,7 +441,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -450,7 +451,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -460,7 +461,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -470,7 +471,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -480,7 +481,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -490,7 +491,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -500,7 +501,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -510,7 +511,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -520,7 +521,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   box_curInCopied:
@@ -531,7 +532,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -541,7 +542,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -551,7 +552,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -561,7 +562,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -571,7 +572,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -581,7 +582,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -591,7 +592,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -601,7 +602,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -611,7 +612,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -621,7 +622,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   box_root:
@@ -632,7 +633,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -642,7 +643,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -652,7 +653,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -662,7 +663,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -672,7 +673,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -682,7 +683,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -692,7 +693,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -702,7 +703,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -712,7 +713,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -722,7 +723,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   box_rootCopied:
@@ -733,7 +734,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -743,7 +744,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -753,7 +754,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -763,7 +764,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -773,7 +774,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -783,7 +784,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -793,7 +794,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -803,7 +804,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -813,7 +814,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -823,7 +824,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   box_parent:
@@ -834,7 +835,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -844,7 +845,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -854,7 +855,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -864,7 +865,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -874,7 +875,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -884,7 +885,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -894,7 +895,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -904,7 +905,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -914,7 +915,7 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   - name: 
@@ -924,10 +925,11 @@ MonoBehaviour:
     id_total: 0
     items_initial: []
     items_exsiting: []
-    conversions: []
+    conversions_initial: []
     movementsDict:
       list: []
   box_parentCopied: []
+  ans: []
   references:
     version: 2
     RefIds: []

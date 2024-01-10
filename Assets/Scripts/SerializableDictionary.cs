@@ -92,7 +92,6 @@ public class SerializableDictionary<TKey, TValue> :
         if (KeyPositions.TryGetValue(key, out var index))
         {
             KeyPositions.Remove(key);
-
             list.RemoveAt(index);
             for (var i = index; i < list.Count; i++)
                 KeyPositions[list[i].Key] = i;

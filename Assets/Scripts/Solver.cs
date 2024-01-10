@@ -17,7 +17,7 @@ public class Solver : MonoBehaviour
     public float waitInterval = 0.1f;
     public static int id_usedTotal = 0;
 
-    public const int maxDepth = 4;
+    public int maxDepth = 4;
     public ItemInfo[] item_load;
     public ItemInfo[] item_loadCopied;
     public ItemInfo[] box_curIn;
@@ -26,7 +26,8 @@ public class Solver : MonoBehaviour
     public ItemInfo[] box_rootCopied;
     public ItemInfo[] box_parent;
     public ItemInfo[] box_parentCopied;
-
+    public string[] ans;
+    public static int id_ans = 0;
     private void Awake()
     {
         instance = this;
@@ -39,38 +40,70 @@ public class Solver : MonoBehaviour
         box_parent = new ItemInfo[maxDepth];
         box_parentCopied = new ItemInfo[maxDepth];
 
-}
+        ans = new string[maxDepth];
+    }
     private void Start()
     {
         SetBox();
     }
     void SetBox()
     {
+        #region level EX1
+        //box_curIn[0] = new();
+        //box_curIn[0].AddInitItem("Box");
+        //ItemInfo boxInside = box_curIn[0].items_initial[^1];
+        //boxInside.AddInitItem("Key");
+        //ItemInfo.Conversion conversion = new()
+        //{
+        //    item_costs = new()
+        //    {
+        //        new(){ name = "Key" },
+        //    },
+        //    item_rewards = new()
+        //    {   
+        //        new(){ name = "Target" },
+        //    },
+        //};
+        //boxInside.AddConversion(conversion);
+        //box_root[0] = box_curIn[0];
+        //box_curIn[0].RefreshItems();
+        #endregion
+        #region level 0-^2
         box_curIn[0] = new();
-        
-        //box_curIn[0].AddInitItem("Key");
-        box_curIn[0].AddInitItem("Box");
-        ItemInfo boxInside = box_curIn[0].items_initial[^1];
-        boxInside.AddInitItem("Key");
         ItemInfo.Conversion conversion = new()
         {
             item_costs = new()
             {
-                new(){ name = "Key" },
+                ItemInfo.GenerateItem("Key"),
             },
             item_rewards = new()
-            {   
-                new(){ name = "Target" },
+            {
+                ItemInfo.GenerateItem("Box"),
             },
         };
-        boxInside.AddConversion(conversion);
+        ItemInfo.Conversion conversion2 = new()
+        {
+            item_costs = new()
+            {
+
+            },
+            item_rewards = new()
+            {
+                ItemInfo.GenerateItem("Target"),
+            },
+        };
+        conversion.item_rewards[0].AddInitConversion(conversion2);
+        box_curIn[0].AddInitConversion(conversion);
+        box_curIn[0].AddInitItem("Box");
+        box_curIn[0].items_initial[^1].AddInitItem("Key");
+        box_curIn[0].RefreshBox();
         box_root[0] = box_curIn[0];
-        
-        box_curIn[0].RefreshItems();
+        #endregion
     }
 
     bool canStepNext = true;
     bool isSolving = false;
+    bool isAuto = true;
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.S) && !isSolving)
@@ -78,7 +111,7 @@ public class Solver : MonoBehaviour
             isSolving = true;
             StartCoroutine(nameof(Solve));
         }
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.A) || isAuto)
         {
             canStepNext = true;
         }
@@ -108,19 +141,21 @@ public class Solver : MonoBehaviour
             box_rootCopied[localDepth] = Clone.DeepCopy1(box_root[localDepth]);
             box_curInCopied[localDepth] = Clone.DeepCopy1(box_curIn[localDepth]);
             item_loadCopied[localDepth] = Clone.DeepCopy1(item_load[localDepth]);
+            ans[localDepth] = funcName;
             #endregion
             if (box_curIn[localDepth].ExecuteMove(funcName, box_curIn[localDepth].movementsDict[funcName]))
             {
+                
                 while (!canStepNext || localDepth != depth)
                 {
-                    Debug.Log("WAIT depth" + localDepth + "-(" + i + ")" + funcName + "-1");
+                    //Debug.Log("WAIT depth" + localDepth + "-(" + i + ")" + funcName + "-1");
                     yield return new WaitForSeconds(waitInterval);
                 }
                 canStepNext = false;
                 StartCoroutine(nameof(Solve));
                 while (!canStepNext || localDepth != depth)
                 {
-                    Debug.Log("WAIT depth" + localDepth + "-(" + i + ")" + funcName+"-2");
+                    //Debug.Log("WAIT depth" + localDepth + "-(" + i + ")" + funcName+"-2");
                     yield return new WaitForSeconds(waitInterval);
                 }
                 canStepNext = false;

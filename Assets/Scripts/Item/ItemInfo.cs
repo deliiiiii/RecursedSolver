@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering.VirtualTexturing;
 
 [Serializable]
 public class ItemInfo
@@ -21,17 +23,17 @@ public class ItemInfo
 
     //public List<Vector2Int> checkPoints;
     [SerializeReference]
-    public List<ItemInfo> items_initial = new();
+    public List<ItemInfo> items_initial;
     [SerializeReference]
-    public List<ItemInfo> items_exsiting = new();
-    public List<Conversion> conversions = new();
+    public List<ItemInfo> items_exsiting;
+    public List<Conversion> conversions_initial;
     [Serializable]
     public class Conversion
     {
         [SerializeReference]
-        public List<ItemInfo> item_costs;
+        public List<ItemInfo> item_costs = new();
         [SerializeReference]
-        public List<ItemInfo> item_rewards;
+        public List<ItemInfo> item_rewards = new();
         public bool canRegainCost;
     }
 
@@ -51,6 +53,9 @@ public class ItemInfo
     */
     public void FakeAwake()
     {
+        items_initial = new();
+        items_exsiting = new();
+        conversions_initial = new();
         movementsDict = new();
         id_in_library = -1;
     }
@@ -62,6 +67,8 @@ public class ItemInfo
         }
         if(funcName.Contains(nameof(UnloadItem)))
         {
+            if (Solver.instance.ans[Solver.depth - 1].Contains(nameof(LoadItem)))
+                return false;
             return UnloadItem();
         }
         if (funcName.Contains(nameof(EnterBox)))
@@ -70,6 +77,8 @@ public class ItemInfo
         }
         if (funcName.Contains(nameof(ExitBox)))
         {
+            if (Solver.instance.ans[Solver.depth - 1].Contains(nameof(EnterBox)))
+                return false;
             return ExitBox();
         }
         if (funcName.Contains(nameof(ConvertItem)))
@@ -87,7 +96,8 @@ public class ItemInfo
         if (Solver.instance.item_load[Solver.depth].id_in_library != -1)
             return false;
         movementsDict.Remove(nameof(LoadItem)+id.ToString());
-        movementsDict.Add(nameof(UnloadItem), -1);
+        if(!movementsDict.Keys.Contains(nameof(UnloadItem)))
+            movementsDict.Add(nameof(UnloadItem), -1);
         Solver.instance.item_load[Solver.depth] = Clone.DeepCopy1(items_exsiting.Find(it => it.id_total == id));
         if (Solver.instance.item_load[Solver.depth].isBox)
             movementsDict.Remove(nameof(EnterBox) + id.ToString());
@@ -111,20 +121,20 @@ public class ItemInfo
     bool EnterBox(int id)
     {
         ItemInfo load = Solver.instance.item_load[Solver.depth];
-        ItemInfo newBox = items_exsiting.Find(it=>it.id_total == id);
-        Solver.instance.box_parent[Solver.depth] = Clone.DeepCopy1(this);
-        Solver.instance.box_curIn[Solver.depth] = newBox;
+        ItemInfo newBox = Clone.DeepCopy1(items_exsiting.Find(it=>it.id_total == id));
         movementsDict.Remove(nameof(EnterBox)+id.ToString());
-        newBox.movementsDict.Add(nameof(ExitBox),-1);
-        newBox.RefreshItems();
+        newBox.RefreshBox();
+        foreach (var it in newBox.movementsDict.Keys)
+            Debug.Log(it);
+        newBox.movementsDict.Add(nameof(ExitBox), -1);
+
         if (load.id_in_library != -1)
         {
-            Debug.Log("a");
             newBox.AddExistingItem(load);
-            Debug.Log("b");
             RemoveExistingItem(load);
-            Debug.Log("c");
         }
+        Solver.instance.box_parent[Solver.depth] = Clone.DeepCopy1(this);
+        Solver.instance.box_curIn[Solver.depth] = newBox;
         Debug.Log("EnterBox :" + newBox.id_total);
         return true;
     }
@@ -134,7 +144,7 @@ public class ItemInfo
         if (load.id_in_library != -1)
         {
             Solver.instance.box_parent[Solver.depth].AddExistingItem(load);
-            RemoveExistingItem(load);
+            //TODO -1 RemoveExistingItem(load);
         }
         Solver.instance.box_curIn[Solver.depth] = Clone.DeepCopy1(Solver.instance.box_parent[Solver.depth]);
         //TODO -1 movementsDict.Value.Remove(nameof(ExitBox));
@@ -149,18 +159,27 @@ public class ItemInfo
     }
     bool ConvertItem(int index)
     {
-        if (!CanSatisfyConversion(index))
+        List<ItemInfo> ret = CanSatisfyConversion(index);
+        if (ret == null)
             return false;
-        movementsDict.Remove(nameof(ConvertItem)+index);
+        movementsDict.Remove(nameof(ConvertItem)+index.ToString());
+        foreach (var it in conversions_initial[index].item_costs)
+            RemoveExistingItem(it);
+        foreach (var it in conversions_initial[index].item_rewards)
+            AddExistingItem(it);
         Debug.Log("Convert id:" + index);
-        if (conversions[index].item_rewards[0].name.Contains("Target"))
-            Debug.Log("WIN!!");
+        if (conversions_initial[index].item_rewards[0].name.Contains("Target"))
+        {
+            Debug.LogError("------------- Solution " + Solver.id_ans++);
+            for (int i = 1; i <= Solver.depth; i++)
+                Debug.LogError(Solver.instance.ans[i]);
+        }
         return true;
     }
-    bool CanSatisfyConversion(int index)
+    List<ItemInfo> CanSatisfyConversion(int index)
     {
         List<ItemInfo> ret = new();
-        foreach(var cost in conversions[index].item_costs)
+        foreach(var cost in conversions_initial[index].item_costs)
         {
             ItemInfo t = items_exsiting.Find(it => 
                                             it.name == cost.name
@@ -170,19 +189,25 @@ public class ItemInfo
                                             !ret.Contains(it)
                                         );
             if (t == null)
-                return false;
+                return null;
             ret.Add(t);
         }
-        return true;
+        return ret;
     }
     #endregion
-    public void AddInitItem(string f_name)//初始添加
+    public void RefreshBox()
+    {
+        movementsDict.Clear();
+        RefreshItems();
+        RefreshConversions();
+    }
+    public static ItemInfo GenerateItem(string f_name)
     {
         ItemInfo item = new()
         {
             name = f_name,
         };
-        switch(item.name)
+        switch (item.name)
         {
             case "Box":
                 item.id_in_library = 0;
@@ -204,14 +229,18 @@ public class ItemInfo
             default:
                 break;
         }
-        items_initial.Add(item);
+        return item;
+    }
+    public void AddInitItem(string f_name)//初始添加
+    {
+        items_initial.Add(GenerateItem(f_name));
     }
     public void AddExistingItem(ItemInfo item)
     {
         if (Solver.instance.item_load[Solver.depth] == item)
         {
             items_exsiting.Add(item);
-            movementsDict.Add(nameof(UnloadItem) + item.id_total, item.id_total);
+            movementsDict.Add(nameof(UnloadItem), -1);
             return;
         }
         ItemInfo newItem = Clone.DeepCopy1(item);
@@ -221,48 +250,62 @@ public class ItemInfo
         Solver.id_usedTotal++;
         if (!newItem.canMove)
             return;
-        movementsDict.Add(nameof(LoadItem) + newItem.id_total, newItem.id_total);
+        movementsDict.Add(nameof(LoadItem) + newItem.id_total.ToString(), newItem.id_total);
         if (!newItem.isBox)
             return;
-        movementsDict.Add(nameof(EnterBox) + newItem.id_total, newItem.id_total);
+        movementsDict.Add(nameof(EnterBox) + newItem.id_total.ToString(), newItem.id_total);
         //TODO newItem.RefreshItems();
     }
     public void RemoveExistingItem(ItemInfo item)
     {
         if (Solver.instance.item_load[Solver.depth] == item)
         {
+            Solver.instance.item_load[Solver.depth].id_in_library = -1;
             movementsDict.Remove(nameof(UnloadItem));
         }
         int id = item.id_total;
         if (!item.canMove)
             return;
-        movementsDict.Remove(nameof(LoadItem) + id);
+        movementsDict.Remove("Fuck");
+        movementsDict.Remove(nameof(LoadItem) + id.ToString());
         if (!item.isBox)
             return;
-        movementsDict.Remove(nameof(EnterBox) + id);
-        items_exsiting.Remove(items_exsiting.Find(it => it.id_total == id));
+        movementsDict.Remove(nameof(EnterBox) + id.ToString());
+        items_exsiting.Remove(item);
     }
     public void RefreshItems()
     {
-        int c = 0;
-        while(items_exsiting.Count != 0)
-        {
-            c++;
-            Debug.Log("c = " + c); 
-            RemoveExistingItem(items_exsiting[0]);
-            if (c > 10)
-                break;
-        }
-           
+        //int c = 0;
+        //while(items_exsiting.Count != 0)
+        //{
+        //    c++;
+        //    Debug.Log("c = " + c); 
+        //    RemoveExistingItem(items_exsiting[0]);
+        //    if (c > 10)
+        //        break;
+        //}
+        items_exsiting.Clear();
         foreach (var it in items_initial)
             AddExistingItem(it);
     }
-    public void AddConversion(Conversion conversion)
+    
+    public void AddInitConversion(Conversion conversion)
     {
-        movementsDict.Add(nameof(ConvertItem)+ conversions.Count.ToString(), conversions.Count);
-        conversions.Add(conversion);
+        conversions_initial.Add(conversion);
     }
-
+    public void AddExistingConversion(Conversion con,int id)
+    {
+        movementsDict.Add(nameof(ConvertItem) + id.ToString(),id);
+    }
+    public void RefreshConversions()
+    {
+        int i = -1;
+        foreach (var it in conversions_initial)
+        {
+            i++;
+            AddExistingConversion(it,i);
+        }
+    }
     //public void AddTrigger()
     //{
 
