@@ -13,18 +13,13 @@ public class ItemInfo
     public string name;
 
     public bool isBox;
-    public bool canReach;
+    //public bool canReach;
     public bool canMove;
 
     public int id_in_library;
     public int id_total;
 
-    //public int id_in_map;
-    //public bool canExit;
-    //public Box t_curBox;
-    //public Item t_item_load;
-
-    public List<Vector2Int> checkPoints;
+    //public List<Vector2Int> checkPoints;
     [SerializeReference]
     public List<ItemInfo> items_initial = new();
     [SerializeReference]
@@ -49,28 +44,18 @@ public class ItemInfo
     //#endregion
 
     #region movementFuncs
-    //[Serializable]
-    //public delegate bool MovementFuncs();
-    //public List<MovementFuncs> movementFuncs = new();
-    //public List <string> name_movementFuncs;
-    //public List <int> paraId_movementFuncs;
     public SerializableDictionary<string, int> movementsDict;
     /*
     移动到checkPoint
-    搬起Item(movable)
-    放下Item
-    进入箱子
-    退出箱子
-    //用钥匙开锁
     //用石头垫脚
     */
     public void FakeAwake()
     {
         movementsDict = new();
+        id_in_library = -1;
     }
     public bool ExecuteMove(string funcName,int idPara)
     {
-        //Debug.Log("ExecuteMove " + funcName + " " + idPara);
         if(funcName.Contains(nameof(LoadItem)))
         {
             return LoadItem(idPara);
@@ -99,20 +84,19 @@ public class ItemInfo
     }
     bool LoadItem(int id)
     {
-        ItemInfo load = Solver.instance.item_load;
-        if (load.id_in_library != -1)
+        if (Solver.instance.item_load[Solver.depth].id_in_library != -1)
             return false;
         movementsDict.Remove(nameof(LoadItem)+id.ToString());
         movementsDict.Add(nameof(UnloadItem), -1);
-        Solver.instance.item_load = Clone.DeepCopy1(items_exsiting.Find(it => it.id_total == id));
-        if (Solver.instance.item_load.isBox)
+        Solver.instance.item_load[Solver.depth] = Clone.DeepCopy1(items_exsiting.Find(it => it.id_total == id));
+        if (Solver.instance.item_load[Solver.depth].isBox)
             movementsDict.Remove(nameof(EnterBox) + id.ToString());
-        Debug.Log("LoadItem :" + id_total);
+        Debug.Log("LoadItem :" + id);
         return true;
     }
     bool UnloadItem()
     {
-        ItemInfo load = Solver.instance.item_load;
+        ItemInfo load = Solver.instance.item_load[Solver.depth];
         if (load.id_in_library == -1)
             return false;
         int id = load.id_total;
@@ -120,40 +104,42 @@ public class ItemInfo
             movementsDict.Add(nameof(EnterBox) + id.ToString(),id);
         movementsDict.Remove(nameof(UnloadItem));
         movementsDict.Add(nameof(LoadItem) + id.ToString(), id);
-        Solver.instance.item_load = new() { id_in_library = -1 };
+        Solver.instance.item_load[Solver.depth] = new() { id_in_library = -1 };
         Debug.Log("UnloadItem :" + id);
         return true;
     }
     bool EnterBox(int id)
     {
-        ItemInfo load = Solver.instance.item_load;
+        ItemInfo load = Solver.instance.item_load[Solver.depth];
         ItemInfo newBox = items_exsiting.Find(it=>it.id_total == id);
-        if (load.id_in_library != -1)
-        {
-            newBox.AddExistingItem(load);
-            RemoveExistingItem(load);
-        }
-        Solver.instance.box_parent = this;
-        Solver.instance.box_curIn = newBox;
+        Solver.instance.box_parent[Solver.depth] = Clone.DeepCopy1(this);
+        Solver.instance.box_curIn[Solver.depth] = newBox;
         movementsDict.Remove(nameof(EnterBox)+id.ToString());
         newBox.movementsDict.Add(nameof(ExitBox),-1);
-
-        Solver.instance.RefreshBox(newBox);
+        newBox.RefreshItems();
+        if (load.id_in_library != -1)
+        {
+            Debug.Log("a");
+            newBox.AddExistingItem(load);
+            Debug.Log("b");
+            RemoveExistingItem(load);
+            Debug.Log("c");
+        }
         Debug.Log("EnterBox :" + newBox.id_total);
         return true;
     }
     bool ExitBox()
     {
-        ItemInfo load = Solver.instance.item_load;
+        ItemInfo load = Solver.instance.item_load[Solver.depth];
         if (load.id_in_library != -1)
         {
-            Solver.instance.box_parent.AddExistingItem(load);
+            Solver.instance.box_parent[Solver.depth].AddExistingItem(load);
             RemoveExistingItem(load);
         }
-        Solver.instance.box_curIn = Solver.instance.box_parent;
+        Solver.instance.box_curIn[Solver.depth] = Clone.DeepCopy1(Solver.instance.box_parent[Solver.depth]);
         //TODO -1 movementsDict.Value.Remove(nameof(ExitBox));
         //TODO -1 refresh existing item
-        Solver.instance.box_parent = null;
+        Solver.instance.box_parent[Solver.depth] = new() { id_in_library = -1 };
         Debug.Log("ExitBox");
         return true;
     }
@@ -222,20 +208,31 @@ public class ItemInfo
     }
     public void AddExistingItem(ItemInfo item)
     {
-        item.id_total = Solver.id_usedTotal;
-        Solver.id_usedTotal++;
+        if (Solver.instance.item_load[Solver.depth] == item)
+        {
+            items_exsiting.Add(item);
+            movementsDict.Add(nameof(UnloadItem) + item.id_total, item.id_total);
+            return;
+        }
         ItemInfo newItem = Clone.DeepCopy1(item);
         items_exsiting.Add(newItem);
+        
+        newItem.id_total = Solver.id_usedTotal;
+        Solver.id_usedTotal++;
         if (!newItem.canMove)
             return;
-        movementsDict.Add(nameof(LoadItem) + item.id_total,item.id_total);
+        movementsDict.Add(nameof(LoadItem) + newItem.id_total, newItem.id_total);
         if (!newItem.isBox)
             return;
-        movementsDict.Add(nameof(EnterBox) + item.id_total, item.id_total);
+        movementsDict.Add(nameof(EnterBox) + newItem.id_total, newItem.id_total);
         //TODO newItem.RefreshItems();
     }
     public void RemoveExistingItem(ItemInfo item)
     {
+        if (Solver.instance.item_load[Solver.depth] == item)
+        {
+            movementsDict.Remove(nameof(UnloadItem));
+        }
         int id = item.id_total;
         if (!item.canMove)
             return;
@@ -247,59 +244,28 @@ public class ItemInfo
     }
     public void RefreshItems()
     {
+        int c = 0;
         while(items_exsiting.Count != 0)
+        {
+            c++;
+            Debug.Log("c = " + c); 
             RemoveExistingItem(items_exsiting[0]);
+            if (c > 10)
+                break;
+        }
+           
         foreach (var it in items_initial)
             AddExistingItem(it);
     }
     public void AddConversion(Conversion conversion)
     {
-        //ClearChild(P_conversion);
-        //GameObject g = Instantiate(prefab_conversion, P_conversion);
-        //g.name = "Conversion_" + (conversions.Count).ToString();
-        //foreach(var sub in conversion.item_costs)
-        //    Instantiate(sub, P_conversion.GetChild(conversions.Count).GetChild(0));
-        //foreach (var sub in conversion.item_rewards)
-        //    Instantiate(sub, P_conversion.GetChild(conversions.Count).GetChild(1));
-        
-        //Debug.Log("Add : ConvertItem" + (conversions.Count - 1).ToString());
         movementsDict.Add(nameof(ConvertItem)+ conversions.Count.ToString(), conversions.Count);
         conversions.Add(conversion);
-        //prefab_movement.name = nameof(ConvertItem) + "_" + (conversions.Count - 1).ToString();
-        //Instantiate(prefab_movement, P_Movement);
     }
 
     //public void AddTrigger()
     //{
 
-    //}
-    //void ClearChild(Transform p)
-    //{
-    //    for (int i = 0; i < p.childCount; i++)
-    //        Destroy(p.GetChild(i).gameObject);
-    //}
-    //void RemoveChild_byName(Transform p,string name)
-    //{
-    //    for (int i = 0; i < p.childCount; i++)
-    //        if(p.GetChild(i).name.Contains(name))
-    //        {
-    //            DestroyImmediate(p.GetChild(i).gameObject);
-    //            //Debug.Log("Removed :" +  name);
-    //            return;
-    //        }    
-    //}
-
-    //static bool hasGot = false;
-    //public void RefreshMovementsFuncName()
-    //{
-    //    if (hasGot)
-    //        return;
-    //    hasGot = true;
-    //    Debug.Log(" RefreshMovementsFuncName() count = " + movementsDict.Keys.Count);
-    //    name_movementFuncs.Clear();
-    //    foreach (var funcName in movementsDict.Keys)
-    //        name_movementFuncs.Add(funcName);
-    //    hasGot = false;
     //}
     //int GetIndexInList<T>(List<T> list,T elem)
     //{
