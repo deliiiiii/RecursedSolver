@@ -219,36 +219,85 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cbb017cdd6f9eb4b8ae7816750a2e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  waitInterval: 0.12
   item_load:
     name: 
     isBox: 0
     canReach: 0
     canMove: 0
+    id_in_library: 0
+    id_total: 0
     checkPoints: []
     items_initial: []
     items_exsiting: []
     conversions: []
-    name_movementFuncs: []
+    movementsDict:
+      list: []
   box_curIn:
     name: 
     isBox: 0
     canReach: 0
     canMove: 0
+    id_in_library: 0
+    id_total: 0
     checkPoints: []
     items_initial: []
     items_exsiting: []
     conversions: []
-    name_movementFuncs: []
+    movementsDict:
+      list: []
+  box_curInCopied:
+    name: 
+    isBox: 0
+    canReach: 0
+    canMove: 0
+    id_in_library: 0
+    id_total: 0
+    checkPoints: []
+    items_initial: []
+    items_exsiting: []
+    conversions: []
+    movementsDict:
+      list: []
   box_root:
     name: 
     isBox: 0
     canReach: 0
     canMove: 0
+    id_in_library: 0
+    id_total: 0
     checkPoints: []
     items_initial: []
     items_exsiting: []
     conversions: []
-    name_movementFuncs: []
+    movementsDict:
+      list: []
+  box_rootCopied:
+    name: 
+    isBox: 0
+    canReach: 0
+    canMove: 0
+    id_in_library: 0
+    id_total: 0
+    checkPoints: []
+    items_initial: []
+    items_exsiting: []
+    conversions: []
+    movementsDict:
+      list: []
+  box_parent:
+    name: 
+    isBox: 0
+    canReach: 0
+    canMove: 0
+    id_in_library: 0
+    id_total: 0
+    checkPoints: []
+    items_initial: []
+    items_exsiting: []
+    conversions: []
+    movementsDict:
+      list: []
   references:
     version: 2
     RefIds: []

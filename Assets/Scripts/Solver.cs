@@ -12,63 +12,29 @@ using System;
 
 public class Solver : MonoBehaviour
 {
-    public static T DeepCopy<T>(T DeepCopyObject)
-    {
-        string _ = JsonConvert.SerializeObject(DeepCopyObject);
-        return JsonConvert.DeserializeObject<T>(_);
-    }
-    public static T DeepCopy2<T>(T RealObject)
-    {
-        using Stream objectStream = new MemoryStream();
-        //利用 System.Runtime.Serialization序列化与反序列化完成引用对象的复制  
-        IFormatter formatter = new BinaryFormatter();
-        formatter.Serialize(objectStream, RealObject);
-        objectStream.Seek(0, SeekOrigin.Begin);
-        return (T)formatter.Deserialize(objectStream);
-    }
-    
     public static Solver instance { get; private set; }
 
-    //public Transform P_Box_Initial;
-    //public Transform P_Box_Existing;
-    //public Box prefab_box;
-    public ItemInfo item_load = null;
+    public float waitInterval = 0.1f;
+    public static int id_usedTotal = 0;
+    public ItemInfo item_load = new();
     public ItemInfo box_curIn;
+    public ItemInfo box_curInCopied;
     public ItemInfo box_root;
-    //public List<Box> boxs_initial = new();
-    //public List<Box> boxs_existing = new();
+    public ItemInfo box_rootCopied;
+    public ItemInfo box_parent;
+
     private void Awake()
     {
         instance = this;
+        item_load.id_in_library = -1;
     }
     private void Start()
     {
         SetBox();
-        RefreshBoxs();
+        RefreshBox(box_curIn);
     }
     void SetBox()
     {
-        //boxs_initial = new()
-        //{
-        //    Instantiate(prefab_box,P_Box_Initial),
-        //};
-        //boxs_initial[0].AddItem("Stone");
-        //boxs_initial[0].AddItem("Stone");
-        //boxs_initial[0].AddItem("Stone");
-        //Box.Conversion conversion = new()
-        //{
-        //    item_costs = new()
-        //    {
-        //        ItemManager.instance.GetItemByName("Stone"),
-        //        ItemManager.instance.GetItemByName("Stone"),
-        //        ItemManager.instance.GetItemByName("Stone"),
-        //    },
-        //    item_rewards = new()
-        //    {
-        //        ItemManager.instance.GetItemByName("Target"),
-        //    },
-        //};
-        //boxs_initial[0].AddConversion(conversion);
         box_curIn = new();
         box_curIn.AddInitItem("Box");
         ItemInfo boxInside = box_curIn.items_initial[^1];
@@ -84,17 +50,13 @@ public class Solver : MonoBehaviour
                 new(){ name = "Target" },
             },
         };
-        //TODO boxInside.AddConversion(conversion);
+        box_root = box_curIn;
+        boxInside.AddConversion(conversion);
 
-        box_curIn.movementsDict.Add("F1", delegate () { Debug.Log("Execute F1"); return true; });
     }
-    void RefreshBoxs()
+    public void RefreshBox(ItemInfo inBox)
     {
-        box_curIn.RefreshItems();
-        //ClearChild(P_Box_Existing);
-        //boxs_existing.Clear();
-        //boxs_existing.Add(Instantiate(boxs_initial[0], P_Box_Existing));
-        //boxs_existing[0].RefreshItems();
+        inBox.RefreshItems();
     }
 
     bool canStepNext = true;
@@ -116,32 +78,6 @@ public class Solver : MonoBehaviour
             box_root = Clone.DeepCopy1(box_curIn);
             //box_curIn.items_initial.Clear();
         }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            box_root = Clone.DeepCopy2(box_curIn);
-            //box_curIn.items_initial.Clear();
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            box_root = Clone.DeepCopy3(box_curIn);
-            //box_curIn.items_initial.Clear();
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            box_root = Clone.DeepCopy4(box_curIn);
-            //box_curIn.items_initial.Clear();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha5))
-        {
-            Debug.Log(box_curIn.dict2.Count);
-            Debug.Log(box_curIn.movementsDict.Count);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha6))
-        {
-            Debug.Log(box_root.dict2.Count);
-            Debug.Log(box_root.movementsDict.Count);
-        }
     }
     int depth = 0;
     private IEnumerator Solve()
@@ -160,13 +96,15 @@ public class Solver : MonoBehaviour
         //Box localBox = box_curIn;
         //Box localBox = Instantiate(box_curIn);
         //Box localBox = box_curIn.CloneViaFakeSerialization();
-        int i = 0;
+        
+        int i = -1;
         foreach(var funcName in box_curIn.movementsDict.Keys)
         //for (int i=0;i< box_curIn.movementsDict.Keys.Count;i++)
         {
-            #region WriteState
             i++;
-            Debug.Log("move " + localDepth + " - " + i);
+            Debug.Log("move(Depth " + localDepth + " ) " + funcName);
+            #region WriteState
+            
             //boxs_existing[0].t_curBox = box_curIn;
             //boxs_existing[0].t_item_load = item_load;
             //GameObject t = Instantiate(boxs_existing[0].gameObject, P_Box_Existing);
@@ -175,32 +113,29 @@ public class Solver : MonoBehaviour
             //Debug.Log("t.count = " + t.GetComponent<Box>().movementFuncs.Count);
             //if (t.GetComponent<Box>().movementFuncs.Count != 0)
             //    Debug.Log(t.GetComponent<Box>().movementFuncs[1]());
-            while (true)
-            {
-                if (canStepNext)
-                    break;
-                yield return new WaitForSeconds(0.1f);
-            }
-            canStepNext = false;
+            box_rootCopied = Clone.DeepCopy1(box_root);
+            box_curInCopied = Clone.DeepCopy1(box_curIn);
             #endregion
-            if (box_curIn.movementsDict[funcName]())
+            if (box_curIn.ExecuteMove(funcName, box_curIn.movementsDict[funcName]))
             {
                 while (!canStepNext || localDepth != depth)
                 {
-                    //Debug.Log("WAIT 1 - localDepth = " + localDepth);
-                    yield return new WaitForSeconds(0.1f);
+                    Debug.Log("WAIT depth" + localDepth + "-(" + i + ")" + funcName + "-1");
+                    yield return new WaitForSeconds(waitInterval);
                 }
                 canStepNext = false;
                 StartCoroutine(nameof(Solve));
                 while (!canStepNext || localDepth != depth)
                 {
-                    //Debug.Log("WAIT 2 - localDepth = " + localDepth);
-                    yield return new WaitForSeconds(0.1f);
+                    Debug.Log("WAIT depth" + localDepth + "-(" + i + ")" + funcName+"-2");
+                    yield return new WaitForSeconds(waitInterval);
                 }
                 canStepNext = false;
             }
             #region ReadState
-            Debug.Log("revert " + localDepth + " - " + i);
+            Debug.Log("revertMove(Depth " + localDepth + " ) " + funcName);
+            box_root = box_rootCopied;
+            box_curIn = box_curInCopied;
             //box_curIn = t.transform.GetChild(0).GetComponent<Box>().t_curBox;
             //item_load = t.transform.GetChild(0).GetComponent<Box>().t_item_load;
             //DestroyImmediate(P_Box_Existing.gameObject);
@@ -210,7 +145,7 @@ public class Solver : MonoBehaviour
             {
                 if (canStepNext)
                     break;
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(waitInterval);
             }
             canStepNext = false;
             #endregion

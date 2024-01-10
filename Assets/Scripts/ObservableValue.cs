@@ -61,8 +61,8 @@ public class ObservableValue<T, TCLASS>
     {
         //if (valueClass is a)
         //    ((a)((object)valueClass)).Func();
-        if (valueClass is ItemInfo)
-            ((ItemInfo)(object)valueClass).RefreshMovementsFuncName();
+        //if (valueClass is ItemInfo)
+        //    ((ItemInfo)(object)valueClass).RefreshMovementsFuncName();
 
 
     }

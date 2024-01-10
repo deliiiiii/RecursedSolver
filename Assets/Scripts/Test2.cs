@@ -27,13 +27,13 @@ public class Test2 : MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            o_dic.Value.Add("1", 111);
-            g0.i = 2225;
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-            o_list.Value.Add(111);
+        //if (Input.GetKeyDown(KeyCode.Alpha1))
+        //{
+        //    o_dic.Value.Add("1", 111);
+        //    g0.i = 2225;
+        //}
+        //if (Input.GetKeyDown(KeyCode.Alpha2))
+        //    o_list.Value.Add(111);
     }
 
     public void DictChanged()
